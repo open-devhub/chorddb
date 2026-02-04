@@ -8,7 +8,7 @@ const axios = require("axios");
 const dc_api = "https://discord.com/api/v10"
 let token = "";
 let encKey;
-let channelid = 0;
+let channel_id = 0;
 
 // Functions \\
 
@@ -20,12 +20,10 @@ function decrypt(text) {
     return encoder.decrypt(encKey, text);
 }
 
-function setup(tkn, enc_key, channel_id) {
+function setup(tkn, enc_key, ch_id) {
     token = tkn;
     encKey = enc_key;
-    channel_id = channel_id;
-
-    return true;
+    channel_id = ch_id;
 }
 
 async function dc_call(url, method="GET", data=null) {
