@@ -10,44 +10,44 @@ let encKey = "";
 // Functions \\
 
 function encrypt(text) {
-    return encoder.encrypt(encKey, text);
+  return encoder.encrypt(encKey, text);
 }
 
 function decrypt(text) {
-    return encoder.decrypt(encKey, text);
+  return encoder.decrypt(encKey, text);
 }
 
 function setup(tkn, enc_key) {
-    token = tkn;
-    encKey = enc_key;
-    return true;
+  token = tkn;
+  encKey = enc_key;
+  return true;
 }
 
 async function dc_call(url, method = "GET", data = null) {
-    const fullUrl = dc_api + url;
-    const headers = {
-        Authorization: `Bot ${token}`
-    };
+  const fullUrl = dc_api + url;
+  const headers = {
+    Authorization: `Bot ${token}`,
+  };
 
-    try {
-        const r = await axios({
-            url: fullUrl,
-            method,
-            headers,
-            data
-        });
-        return r.data;
-    } catch (err) {
-        if (err.response && err.response.data) {
-            return err.response.data;
-        }
-        throw err;
+  try {
+    const r = await axios({
+      url: fullUrl,
+      method,
+      headers,
+      data,
+    });
+    return r.data;
+  } catch (err) {
+    if (err.response && err.response.data) {
+      return err.response.data;
     }
+    throw err;
+  }
 }
 
 module.exports = {
-    encrypt,
-    decrypt,
-    setup,
-    dc_call
+  encrypt,
+  decrypt,
+  setup,
+  dc_call,
 };

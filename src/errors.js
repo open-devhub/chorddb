@@ -34,5 +34,5 @@ module.exports = {
   MessageTooLargeError,
   InvalidChannelIdError,
   InvalidTokenError,
-  ChordDBNotStartedError
+  ChordDBNotStartedError,
 };
