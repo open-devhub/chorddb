@@ -1,21 +1,41 @@
 {
-  "name": "chorddb",
-  "version": "1.0.0",
-  "description": "Chorddb is a simple, lightweight package which is a database like MongoDB which uses Discord as storage with encryption. It works with JSON data.",
-  "main": "index.js",
-  "scripts": {
-    "test": "node tests/maintest.js"
-  },
-  "keywords": [
-    "Database",
-    "Discord",
-    "MongoDB"
-  ],
-  "author": "iamiak",
-  "license": "MIT",
-  "dependencies": {
-    "aes256": "^1.1.0",
-    "axios": "^1.11.0",
-    "form-data": "^4.0.5"
-  }
+	"name": "chorddb",
+	"version": "1.0.0",
+	"description": "Chorddb is a simple, lightweight package which is a database like MongoDB which uses Discord as storage with encryption. It works with JSON data.",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
+			},
+			"require": {
+				"types": "./dist/index.d.cts",
+				"default": "./dist/index.cjs"
+			}
+		}
+	},
+	"scripts": {
+		"format": "prettier --write .",
+		"build": "tsup"
+	},
+	"keywords": [
+		"Database",
+		"Discord",
+		"MongoDB"
+	],
+	"author": "iamiak",
+	"license": "MIT",
+	"dependencies": {
+		"@discordjs/collection": "^2.1.1",
+		"@discordjs/rest": "^2.6.0",
+		"discord-api-types": "^0.38.38",
+		"form-data": "^4.0.5"
+	},
+	"devDependencies": {
+		"@types/node": "^25.2.1",
+		"prettier": "^3.8.1",
+		"tsup": "^8.5.1",
+		"typescript": "^5.9.3"
+	}
 }

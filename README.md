@@ -59,23 +59,23 @@ const { UDB } = require("chorddb");
 const db = new UDB("YOUR_DISCORD_TOKEN", "ENCRYPTION_KEY", "CHANNEL_ID");
 
 (async () => {
-  await db.start();
+	await db.start();
 
-  const writeSuccess = await db.write({
-    key: "user123",
-    name: "Someone",
-    coins: 100,
-  });
-  console.log("Write successful?", writeSuccess);
+	const writeSuccess = await db.write({
+		key: "user123",
+		name: "Someone",
+		coins: 100,
+	});
+	console.log("Write successful?", writeSuccess);
 
-  const user = await db.find({ key: "key", value: "user123" });
-  console.log("Found user:", user);
+	const user = await db.find({ key: "key", value: "user123" });
+	console.log("Found user:", user);
 
-  const editSuccess = await db.edit(["key", "user123"], ["coins", 150]);
-  console.log("Edit successful?", editSuccess);
+	const editSuccess = await db.edit(["key", "user123"], ["coins", 150]);
+	console.log("Edit successful?", editSuccess);
 
-  const allData = await db.read();
-  console.log("All data in DB:", allData);
+	const allData = await db.read();
+	console.log("All data in DB:", allData);
 })();
 ```
 
