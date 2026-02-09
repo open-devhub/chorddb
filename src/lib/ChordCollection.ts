@@ -289,7 +289,7 @@ export class ChordCollection<const Collections extends ChordCollectionOptions[] 
 
 		delete data.id;
 
-		const result = { ...data, id: message.id };
+		const result = { id: message.id, ...data };
 
 		if (this.shouldCache) {
 			this.#documents.set(message.id, result);
