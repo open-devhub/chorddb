@@ -55,7 +55,7 @@ const chord = new Chord({
 	key: getKey("YOUR_ENCRYPTION_KEY_OR_PASSWORD"),
 	collections: [
 		{ name: "users", channelId: "1469947881367797825" },
-		{ name: "guilds", channelId: "1469947881367797826" },
+		{ name: "shop", channelId: "1469947881367797826" },
 	],
 });
 ```
@@ -106,16 +106,21 @@ const guilds = chord.collect("guilds");
 ### Insert a document
 
 ```ts
-await users.create({
+await users.insertOne({
 	username: "someone",
 	coins: 100,
 });
+
+let moreUsers = await users.insertMany([
+	{ username: "someone else", coins: 200 },
+	{ username: "another user", coins: 300 },
+]);
 ```
 
 ### Find documents
 
 ```ts
-await users.findBy({
+await users.find({
 	username: "someone",
 });
 
@@ -125,19 +130,31 @@ await users.findById("123"); // ID is the message ID
 or using a predicate:
 
 ```ts
-const richUsers = await users.findBy((doc) => doc.coins > 500);
+const richUsers = await users.find((doc) => doc.coins > 500);
 ```
 
 ### Update documents
 
 ```ts
-await users.updateBy(
+await users.updateOne(
 	{ username: "someone" },
 	{
 		$inc: { coins: 50 },
 		$set: { premium: true },
 	},
 );
+
+await users.updateMany((doc) => doc["coins"] < 300, {
+	$dec: { coins: 20 },
+});
+```
+
+### Delete Documents
+
+```ts
+await users.deleteOne({ username: "someone else" });
+
+await users.deleteMany((doc) => doc["coins"] < 150);
 ```
 
 ### Fetch all documents
@@ -157,6 +174,7 @@ const allUsers = await users.findAll();
 
 - `$set`
 - `$inc`
+- `$dec`
 - `$unset`
 - `$push`
 
