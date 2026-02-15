@@ -3,7 +3,6 @@ import { Routes, type APIMessage } from "discord-api-types/v10";
 
 import { decrypt, encrypt, type EncryptedResult } from "../utils/crypto.js";
 import type { Chord, ChordCollectionOptions } from "./Chord.js";
-import ucid from "unique-custom-id";
 
 export interface UpdateOperators {
 	$set?: Record<string, any>;
@@ -205,7 +204,7 @@ export class ChordCollection<const Collections extends ChordCollectionOptions[] 
 			this.#documents.set(message.id, doc);
 		}
 
-		return { _id: ucid.format("objectid24"), id: message.id, ...doc };
+		return { id: message.id, ...doc };
 	}
 
 	public async insertMany<T extends Record<string, any>>(data: T[]): Promise<Array<T & { id: string }>> {
