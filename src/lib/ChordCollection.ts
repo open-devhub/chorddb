@@ -7,6 +7,7 @@ import type { Chord, ChordCollectionOptions } from "./Chord.js";
 export interface UpdateOperators {
 	$set?: Record<string, any>;
 	$inc?: Record<string, number>;
+	$dec?: Record<string, number>;
 	$unset?: Record<string, true>;
 	$push?: Record<string, any>;
 }
@@ -72,7 +73,7 @@ export class ChordCollection<const Collections extends ChordCollectionOptions[] 
 		return results;
 	}
 
-	public async findBy<T extends Record<string, any>>(filter: FilterQuery<T>): Promise<Array<T & { id: string }>> {
+	public async find<T extends Record<string, any>>(filter: FilterQuery<T>): Promise<Array<T & { id: string }>> {
 		const results: Array<T & { id: string }> = [];
 
 		await this.lazyFetch(async (messages) => {
@@ -155,16 +156,25 @@ export class ChordCollection<const Collections extends ChordCollectionOptions[] 
 		return { id, ...updated };
 	}
 
-	public async updateBy<T extends Record<string, any>>(
+	public async updateOne<T extends Record<string, any>>(
 		filter: FilterQuery<T>,
 		update: UpdateOperators,
-	): Promise<Array<T & { id: string }>> {
-		const docs = await this.findBy(filter);
+	): Promise<(T & { id: string }) | undefined> {
+		const doc = await this.findFirst(filter);
+		if (!doc) {
+			return undefined;
+		}
+
+		return this.updateById<T>(doc.id, update);
+	}
+
+	// NOTE: this function will update multiple documents, updateMany(filter, update) to update documents based on the filter, or updateMany({}, update) to update all documents
+	public async updateMany<T extends Record<string, any>>(filter: FilterQuery<T>, update: UpdateOperators) {
+		const docs = await this.find(filter);
 		const updated: Array<T & { id: string }> = [];
 
 		for (const doc of docs) {
 			const result = await this.updateById<T>(doc.id, update);
-
 			if (result) {
 				updated.push(result);
 			}
@@ -173,11 +183,7 @@ export class ChordCollection<const Collections extends ChordCollectionOptions[] 
 		return updated;
 	}
 
-	public async updateAll<T extends Record<string, any>>(update: UpdateOperators): Promise<Array<T & { id: string }>> {
-		return this.updateBy(() => true, update);
-	}
-
-	public async create<T extends Record<string, any>>(data: T): Promise<T & { id: string }> {
+	public async insertOne<T extends Record<string, any>>(data: T): Promise<T & { id: string }> {
 		const doc = structuredClone(data);
 
 		delete (doc as any).id;
@@ -201,6 +207,15 @@ export class ChordCollection<const Collections extends ChordCollectionOptions[] 
 		return { id: message.id, ...doc };
 	}
 
+	public async insertMany<T extends Record<string, any>>(data: T[]): Promise<Array<T & { id: string }>> {
+		const results: Array<T & { id: string }> = [];
+		for (const item of data) {
+			const result = await this.insertOne(item);
+			results.push(result);
+		}
+		return results;
+	}
+
 	public async deleteById(id: string): Promise<boolean> {
 		try {
 			await this.rest.delete(Routes.channelMessage(this.channelId, id));
@@ -212,19 +227,26 @@ export class ChordCollection<const Collections extends ChordCollectionOptions[] 
 		}
 	}
 
-	public async deleteBy<T extends Record<string, any>>(filter: FilterQuery<T>): Promise<number> {
-		const docs = await this.findBy(filter);
+	public async deleteMany<T extends Record<string, any>>(filter: FilterQuery<T>): Promise<number> {
+		const docs = await this.find(filter);
 		let count = 0;
 
 		for (const doc of docs) {
 			const success = await this.deleteById(doc.id);
-
 			if (success) {
 				count++;
 			}
 		}
-
+	
 		return count;
+	}
+
+	public async deleteOne<T extends Record<string, any>>(filter: FilterQuery<T>): Promise<boolean> {
+		const doc = await this.findFirst(filter);
+		if (!doc) {
+			return false;
+		}
+		return this.deleteById(doc.id);
 	}
 
 	public async deleteAll(): Promise<number> {
@@ -426,6 +448,20 @@ export class ChordCollection<const Collections extends ChordCollectionOptions[] 
 				ChordCollection.setAtPath(next, path, (prev ?? 0) + update.$inc[path]!);
 			}
 		}
+
+		if (update.$dec) {
+			for (const path in update.$dec) {
+				ChordCollection.assertPathAllowed(path);
+				const prev = ChordCollection.getAtPath(next, path);
+
+				if (prev !== undefined && typeof prev !== "number") {
+					throw new TypeError(`Cannot $dec non-number field "${path}"`);
+				}
+
+				ChordCollection.setAtPath(next, path, (prev ?? 0) - update.$dec[path]!);
+			}
+		}
+
 
 		if (update.$unset) {
 			for (const path in update.$unset) {

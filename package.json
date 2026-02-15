@@ -17,12 +17,14 @@
 	},
 	"scripts": {
 		"format": "prettier --write .",
-		"build": "tsup"
+		"build": "tsup",
+		"test": "node test/index.ts"
 	},
 	"keywords": [
-		"Database",
-		"Discord",
-		"MongoDB"
+		"database",
+		"discord",
+		"mongodb",
+		"chorddb"
 	],
 	"author": "iamiak",
 	"license": "MIT",
@@ -34,6 +36,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "^25.2.1",
+		"dotenv": "^17.3.1",
 		"prettier": "^3.8.1",
 		"tsup": "^8.5.1",
 		"typescript": "^5.9.3"
