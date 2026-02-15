@@ -10,31 +10,37 @@ const chord = new Chord({
 
 const users = chord.collect("users");
 
-let user = await users.create({
+let user = await users.insertOne({
 	username: "someone",
 	coins: 100,
 });
 
 console.log(`User ${user.username} (${user.id}) created`);
 
-let user2 = await users.create({
-	username: "someone else",
-	coins: 1000,
+let moreUsers = await users.insertMany([
+	{ username: "someone else", coins: 200 },
+	{ username: "another user", coins: 300 },
+]);
+
+moreUsers.forEach((user) => {
+	console.log(`User ${user.username} (${user.id}) created`);
 });
 
-console.log(`User ${user2.username} (${user2.id}) created`);
-
-const richUsers = await users.findBy((doc) => doc["coins"] > 500);
+const richUsers = await users.find((doc) => doc["coins"] > 500);
 
 console.log(`There are ${richUsers.length} rich users`);
 
-await users.updateBy(
+await users.updateOne(
 	{ username: "someone" },
 	{
 		$inc: { coins: 50 },
 		$set: { premium: true },
 	},
 );
+
+await users.updateMany((doc) => doc["coins"] < 300, {
+	$dec: { coins: 20 },
+});
 
 const allUsers = await users.findAll();
 

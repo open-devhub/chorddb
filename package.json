@@ -17,12 +17,14 @@
 	},
 	"scripts": {
 		"format": "prettier --write .",
-		"build": "tsup"
+		"build": "tsup",
+		"test": "node test/index.ts"
 	},
 	"keywords": [
-		"Database",
-		"Discord",
-		"MongoDB"
+		"database",
+		"discord",
+		"mongodb",
+		"chorddb"
 	],
 	"author": "iamiak",
 	"license": "MIT",
@@ -30,7 +32,8 @@
 		"@discordjs/collection": "^2.1.1",
 		"@discordjs/rest": "^2.6.0",
 		"discord-api-types": "^0.38.38",
-		"form-data": "^4.0.5"
+		"form-data": "^4.0.5",
+		"unique-custom-id": "^3.2.1"
 	},
 	"devDependencies": {
 		"@types/node": "^25.2.1",
